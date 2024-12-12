@@ -8,24 +8,28 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Редактор и анализатор формул</h1>
-
-    <div class="editor">
-      <h2>Редактор формул</h2>
-      <textarea id="latexInput" placeholder="Введите LaTeX формулу"></textarea>
-      <button onclick="renderFormula()">Рендеринг</button>
-      <button onclick="exportLatex()">Экспорт</button>
-      <button onclick="importLatex()">Импорт</button>
-      <h3>Результат рендеринга:</h3>
-      <div id="formulaOutput" class="formula-output"></div>
+    <h1>Расширенный редактор и анализатор формул</h1>
+  
+    <div class="toolbar">
+      <button onclick="insertTemplate('x^2')">Степень</button>
+      <button onclick="insertTemplate('\\sqrt{x}')">Корень</button>
+      <button onclick="insertTemplate('\\frac{a}{b}')">Дробь</button>
+      <button onclick="insertTemplate('\\int_{a}^{b}')">Интеграл</button>
+      <button onclick="insertTemplate('\\log(x)')">Логарифм</button>
     </div>
-
-    <div class="comparator">
-      <h2>Сравнение формул</h2>
-      <textarea id="compareInput" placeholder="Введите вторую LaTeX формулу для сравнения"></textarea>
-      <button onclick="compareFormulas()">Сравнить</button>
-      <p id="comparisonResult"></p>
+  
+    <textarea id="latexInput" rows="4" cols="50" placeholder="Введите LaTeX формулу"></textarea>
+    <button onclick="renderFormula()">Рендеринг формулы</button>
+    <button onclick="exportLatex()">Экспорт в JSON</button>
+    <button onclick="importLatex()">Импорт из JSON</button>
+    <button onclick="indexFormula()">Добавить формулу в базу</button>
+    <button onclick="searchFormula()">Поиск совпадений</button>
+  
+    <h2>Результат рендеринга:</h2>
+    <div id="formulaOutput"></div>
+  
+    <h2>Результат сравнения:</h2>
+    <div id="comparisonResult"></div>
     </div>
   </div>
   <script src="app.js"></script>
