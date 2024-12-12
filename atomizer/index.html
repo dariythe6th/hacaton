@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="editor">
+        <textarea id="latexInput" placeholder="Введите LaTeX формулу"></textarea>
+        <button onclick="renderFormula()">Отобразить формулу</button>
+        <button onclick="exportLatex()">Экспортировать LaTeX</button>
+    </div>
+
+    <div id="output">
+        <h3>Отображение формулы:</h3>
+        <div id="formulaOutput"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
