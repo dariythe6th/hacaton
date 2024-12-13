@@ -41,10 +41,10 @@ function compareFormulas() {
 
   const similarity = calculateSimilarity(formula1, formula2);
   const comparisonResult = document.getElementById('comparisonResult');
-
   comparisonResult.innerHTML = `Сходство: ${similarity}%`;
 
-  highlightDifferences(formula1, formula2);
+  // Показать новое поле с выделением
+  showComparisonHighlight(formula1, formula2);
 }
 
 // Подсчёт сходства (простой пример)
@@ -56,11 +56,44 @@ function calculateSimilarity(formula1, formula2) {
 }
 
 // Подсветка различий
-function highlightDifferences(formula1, formula2) {
-  const formulaOutput = document.getElementById('formulaOutput');
-  formulaOutput.innerHTML = `\\(${formula1}\\)<br>\\(${formula2}\\)`;
+function showComparisonHighlight(formula1, formula2) {
+  const comparisonHighlight = document.getElementById('comparisonHighlight');
+  const comparisonFormula1 = document.getElementById('comparisonFormula1');
+  const comparisonFormula2 = document.getElementById('comparisonFormula2');
 
-  MathJax.Hub.Queue(["Typeset", MathJax.Hub, formulaOutput]);
+  const common = findCommonElements(formula1, formula2);
+
+  // Форматируем формулы с выделением общих частей
+  const highlightedFormula1 = formula1
+    .replace(/\\\(|\\\)/g, '') // Удаляем скобки \(
+    .split('')
+    .map(char =>
+      common.includes(char)
+        ? `<span class="highlight">${char}</span>` // Подсвечиваем общие
+        : char
+    )
+    .join('');
+
+  const highlightedFormula2 = formula2
+    .replace(/\\\(|\\\)/g, '') // Удаляем скобки \)
+    .split('')
+    .map(char =>
+      common.includes(char)
+        ? `<span class="highlight">${char}</span>` // Подсвечиваем общие
+        : char
+    )
+    .join('');
+
+  // Вставляем отформатированные формулы
+  comparisonFormula1.innerHTML = highlightedFormula1;
+  comparisonFormula2.innerHTML = highlightedFormula2;
+
+
+  // Обновляем MathJax для новых формул
+  MathJax.Hub.Queue(["Typeset", MathJax.Hub, comparisonHighlight]);
+
+  // Показываем поле
+  openModal();
 }
 // Вставка стандартного элемента в LaTeX
 function insertElement(element) {
@@ -73,34 +106,13 @@ function insertElement(element) {
   input.focus();
   input.setSelectionRange(start + element.length, start + element.length);
 }
-// Сравнение двух формул
-function compareFormulas() {
-  const formula1 = document.getElementById('latexInput').value;
-  const formula2 = document.getElementById('comparisonInput').value;
 
-  const similarity = calculateSimilarity(formula1, formula2);
-  const comparisonResult = document.getElementById('comparisonResult');
-  comparisonResult.innerHTML = `Сходство: ${similarity}%`;
-
-  highlightDifferences(formula1, formula2);
-}
-
-// Подсветка совпадающих частей формул
-function highlightDifferences(formula1, formula2) {
-  const output = document.getElementById('formulaOutput');
-  const common = findCommonElements(formula1, formula2);
-  const highlighted = formula1.split('').map(char => {
-      return common.includes(char) ? `<span class="highlight">${char}</span>` : char;
-  }).join('');
-
-  output.innerHTML = highlighted;
-  MathJax.Hub.Queue(["Typeset", MathJax.Hub, output]);
-}
 
 // Пример: поиск общих элементов (упрощённый)
 function findCommonElements(formula1, formula2) {
   return formula1.split('').filter(char => formula2.includes(char));
 }
+
 // Отправка формулы на сервер (POST запрос)
 function sendFormulaToServer(formula) {
   fetch('/api/formulas', {
@@ -151,4 +163,15 @@ function fetchAndCompare() {
               .join('<br>');
       })
       .catch(error => console.error('Error:', error));
+}
+
+function openModal() {
+  const modal = document.getElementById('comparisonHighlight');
+  modal.style.display = 'flex'; // Показываем окно
+}
+
+// Закрыть модальное окно
+function closeModal() {
+  const modal = document.getElementById('comparisonHighlight');
+  modal.style.display = 'none'; // Скрываем окно
 }
