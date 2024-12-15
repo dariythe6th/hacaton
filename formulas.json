@@ -1,0 +1,22 @@
+[
+    { "formula": "E=mc^2", "description": "Формула эквивалентности массы и энергии (Эйнштейн)" },
+    { "formula": "a^2+ b^2=c^2", "description": "Теорема Пифагора" },
+    { "formula": "F=ma", "description": "Второй закон Ньютона" },
+    { "formula": "V = \\frac{4}{3}\\pi r^3", "description": "Объем шара" },
+    { "formula": "A = \\pi r^2", "description": "Площадь круга" },
+    { "formula": "\\sin^2 x + \\cos^2 x = 1", "description": "Основное тригонометрическое тождество" },
+    { "formula": "e^{i\\pi} + 1 = 0", "description": "Формула Эйлера" },
+    { "formula": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}", "description": "Квадратное уравнение" },
+    { "formula": "\\nabla \\cdot \\vec{E} = \\frac{\\rho}{\\epsilon_0}", "description": "Закон Гаусса для электрического поля" },
+    { "formula": "PV = nRT", "description": "Уравнение состояния идеального газа" },
+    { "formula": "\\int_a^b f(x)dx = F(b) - F(a)", "description": "Основная теорема анализа" },
+    { "formula": "i\\hbar \\frac{\\partial}{\\partial t} \\Psi = \\hat{H} \\Psi", "description": "Уравнение Шрёдингера" },
+    { "formula": "\\sum_{n=1}^\\infty \\frac{1}{n^2} = \\frac{\\pi^2}{6}", "description": "Ряд Базеля" },
+    { "formula": "\\nabla \\cdot \\vec{B} = 0", "description": "Закон Гаусса для магнитного поля" },
+    { "formula": "\\vec{F} = q\\vec{E} + q\\vec{v} \\times \\vec{B}", "description": "Сила Лоренца" },
+    { "formula": "S = 2\\pi r h + 2\\pi r^2", "description": "Площадь поверхности цилиндра" },
+    { "formula": "y = mx + b", "description": "Уравнение прямой в аналитической геометрии" },
+    { "formula": "\\lambda = \\frac{h}{mv}", "description": "Формула де Бройля" },
+    { "formula": "\\frac{d^2x}{dt^2} + \\omega^2x = 0", "description": "Дифференциальное уравнение гармонических колебаний" }
+  ]
+  
