@@ -1,0 +1,149 @@
+/* Общий стиль для страницы */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  color: #333;
+  line-height: 1.6;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  color: #5b5b95;
+}
+
+/* Оформление редактора */
+#editor {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  box-sizing: border-box;
+}
+
+button {
+  display: inline-block;
+  margin: 5px 10px;
+  padding: 10px 20px;
+  background-color: #5b5b95;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #46467a;
+}
+
+#mathElements {
+  margin-bottom: 20px;
+}
+
+/* Вывод формулы */
+#output {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#formulaOutput {
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  min-height: 50px;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* Сравнение формул */
+#comparison {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+Стиль для отображения формул 
+#formulaOutput, #comparisonFormula1, #comparisonFormula2 {
+  padding: 10px;
+  background: #f4f4f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 18px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+/* Подсветка совпадающих частей */
+.highlight {
+  color: #ff6347; /* Насыщенный красный */
+  font-weight: bold;
+  background-color: #ffe4e1; /* Светло-розовый фон */
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+
+/* Модальное окно (фон) */
+.modal {
+  display: none; /* Скрыто по умолчанию */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+  z-index: 1000; /* Поверх всего остального */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Контент модального окна */
+.modal-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+/* Кнопка закрытия */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-button:hover {
+  color: #d9534f;
+}

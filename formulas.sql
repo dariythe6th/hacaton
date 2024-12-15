@@ -1,0 +1,5 @@
+CREATE TABLE formulas (
+    id SERIAL PRIMARY KEY,
+    formula TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
