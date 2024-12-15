@@ -9,10 +9,11 @@ const port = 3000;
 const pool = new Pool({
     user: 'your_user',
     host: 'localhost',
-    database: 'formulas_db',
-    password: 'your_password',
+    database: 'formulas',
+    password: '2111',
     port: 5432,
 });
+app.use(express.static('public'));
 
 app.use(bodyParser.json());
 
