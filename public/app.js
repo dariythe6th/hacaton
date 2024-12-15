@@ -14,7 +14,21 @@ function exportLatex() {
 
   console.log("Экспортированный LaTeX: ", jsonOutput);
   alert(`Экспортированный LaTeX: ${jsonOutput}`);
+
+  // Создание Blob с JSON содержимым
+  const blob = new Blob([jsonOutput], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  // Создание временной ссылки для скачивания файла
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'latex_formula.json';  // Название файла для скачивания
+  link.click();
+
+  // Освобождение созданного URL
+  URL.revokeObjectURL(url);
 }
+
 
 // Импорт формулы из JSON
 function importLatex() {
@@ -34,12 +48,12 @@ function importLatex() {
   };
 }
 
-// Сравнение формул
+// Сравнение формул с учетом структуры и степеней
 function compareFormulas() {
   const formula1 = document.getElementById('latexInput').value;
   const formula2 = document.getElementById('comparisonInput').value;
 
-  const similarity = calculateSimilarity(formula1, formula2);
+  const similarity = calculateStructuralSimilarity(formula1, formula2);
   const comparisonResult = document.getElementById('comparisonResult');
   comparisonResult.innerHTML = `Сходство: ${similarity}%`;
 
@@ -47,54 +61,83 @@ function compareFormulas() {
   showComparisonHighlight(formula1, formula2);
 }
 
-// Подсчёт сходства (простой пример)
-function calculateSimilarity(formula1, formula2) {
-  if (formula1 === formula2) return 100;
+// Подсчёт структурного сходства с учётом содержимого и степеней
+function calculateStructuralSimilarity(formula1, formula2) {
+  const parsedFormula1 = parseLatex(formula1);
+  const parsedFormula2 = parseLatex(formula2);
 
-  const common = formula1.split('').filter(char => formula2.includes(char)).length;
-  return Math.floor((2 * common / (formula1.length + formula2.length)) * 100);
+  if (compareParsedFormulas(parsedFormula1, parsedFormula2)) {
+    return 100;
+  }
+
+  const common = calculateCommonStructure(parsedFormula1, parsedFormula2);
+  const maxElements = Math.max(countElements(parsedFormula1), countElements(parsedFormula2));
+
+  return Math.floor((common / maxElements) * 100);
 }
 
-// Подсветка различий
+// Сравнение парсенных формул с учетом структуры и степеней
+function compareParsedFormulas(parsedFormula1, parsedFormula2) {
+  if (parsedFormula1.length !== parsedFormula2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < parsedFormula1.length; i++) {
+    if (parsedFormula1[i] !== parsedFormula2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Расширенный парсинг LaTeX-формулы
+function parseLatex(latex) {
+  return latex
+    .replace(/\s+/g, '') // Убираем пробелы
+    .replace(/\left|\right/g, '') // Убираем скобочные элементы
+    .replace(/\sqrt\{(.*?)\}/g, (_, content) => `sqrt(${parseLatex(content)})`)
+    .replace(/\frac\{(.*?)\}\{(.*?)\}/g, (_, num, denom) => `(${parseLatex(num)})/(${parseLatex(denom)})`)
+    .replace(/\^{([^}]+)}/g, (_, exp) => `^(${parseLatex(exp)})`)
+    .replace(/\{([^}]+)}/g, (_, content) => `(${parseLatex(content)})`)
+    .split(/([+\-*/^=()])/).filter(Boolean); // Разбиваем формулу на элементы
+}
+
+// Подсчёт общих структурных элементов
+function calculateCommonStructure(parsedFormula1, parsedFormula2) {
+  const common = new Set(parsedFormula1.filter(el => parsedFormula2.includes(el)));
+  return common.size;
+}
+
+// Подсчёт общего числа элементов
+function countElements(parsedFormula) {
+  return parsedFormula.length;
+}
+
+// Обновленная подсветка различий
 function showComparisonHighlight(formula1, formula2) {
-  const comparisonHighlight = document.getElementById('comparisonHighlight');
+  const parsedFormula1 = parseLatex(formula1);
+  const parsedFormula2 = parseLatex(formula2);
+
   const comparisonFormula1 = document.getElementById('comparisonFormula1');
   const comparisonFormula2 = document.getElementById('comparisonFormula2');
 
-  const common = findCommonElements(formula1, formula2);
+  const highlightedFormula1 = highlightDifferences(parsedFormula1, parsedFormula2);
+  const highlightedFormula2 = highlightDifferences(parsedFormula2, parsedFormula1);
 
-  // Форматируем формулы с выделением общих частей
-  const highlightedFormula1 = formula1
-    .replace(/\\\(|\\\)/g, '') // Удаляем скобки \(
-    .split('')
-    .map(char =>
-      common.includes(char)
-        ? `<span class="highlight">${char}</span>` // Подсвечиваем общие
-        : char
-    )
-    .join('');
-
-  const highlightedFormula2 = formula2
-    .replace(/\\\(|\\\)/g, '') // Удаляем скобки \)
-    .split('')
-    .map(char =>
-      common.includes(char)
-        ? `<span class="highlight">${char}</span>` // Подсвечиваем общие
-        : char
-    )
-    .join('');
-
-  // Вставляем отформатированные формулы
   comparisonFormula1.innerHTML = highlightedFormula1;
   comparisonFormula2.innerHTML = highlightedFormula2;
 
-
-  // Обновляем MathJax для новых формул
   MathJax.Hub.Queue(["Typeset", MathJax.Hub, comparisonHighlight]);
-
-  // Показываем поле
   openModal();
 }
+
+// Подсветка различий между формулами
+function highlightDifferences(formula, reference) {
+  return formula
+    .map(el => reference.includes(el) ? `<span class="highlight">${el}</span>` : el)
+    .join('');
+}
+
 // Вставка стандартного элемента в LaTeX
 function insertElement(element) {
   const input = document.getElementById('latexInput');
@@ -128,7 +171,12 @@ function sendFormulaToServer(formula) {
 }
 // Сохранение формулы в базу данных
 function saveFormula() {
-  const formula = document.getElementById('latexInput').value;
+  const formula = document.getElementById('latexInput').value.trim();
+  if (!formula) {
+    alert('Введите формулу перед сохранением!');
+    return;
+  }
+
   fetch('/api/formulas', {
       method: 'POST',
       headers: {
@@ -136,13 +184,22 @@ function saveFormula() {
       },
       body: JSON.stringify({ formula }),
   })
-      .then(response => response.json())
-      .then(data => {
-          alert('Формула сохранена!');
-          console.log(data);
-      })
-      .catch(error => console.error('Error:', error));
+  .then(response => {
+      if (!response.ok) {
+          throw new Error(`Ошибка сервера: ${response.statusText}`);
+      }
+      return response.json();
+  })
+  .then(data => {
+      alert('Формула успешно сохранена!');
+      console.log('Ответ сервера:', data);
+  })
+  .catch(error => {
+      console.error('Ошибка при сохранении формулы:', error);
+      alert('Произошла ошибка при сохранении формулы.');
+  });
 }
+
 
 // Получение и сравнение формул
 function fetchAndCompare() {
