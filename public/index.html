@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formula Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -28,13 +29,21 @@
         <h3>Отображение формулы:</h3>
         <div id="formulaOutput"></div>
     </div>
+    <div id="comparisonResultBlock" style="display: none;" class= "modal">
+        <div class="modal-content">
+        <span class="close-button" onclick="closeDBModal()">&times;</span>
+        <h3>Результаты сравнения с базой данных:</h3>
+        <div id="comparisonResult"></div>
+        </div>
+    </div>
+    
     <div id="comparisonHighlight" style="display: none;" class= "modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
             <h3>Результат сравнения:</h3>
             <div id="comparisonFormula1"></div>
             <div id="comparisonFormula2"></div>
-            <div id="comparisonResult"></div>
+            <div id="comparison2Result"></div>
         </div>
     </div>
     <div id="comparison">
@@ -46,6 +55,6 @@
     
 
     <script src="app.js"></script>
-    <script src ="/hacaton-main2/server.js"></script>
+    <!--<script src ="/hacaton-main2/server.js"></script>-->
 </body>
 </html>
