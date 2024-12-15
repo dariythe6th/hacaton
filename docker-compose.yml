@@ -1,26 +1,15 @@
-version: '3.8'
+
+
 services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
+    container_name: backend_container
     ports:
-      - "3000:3000"
-    environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: formulas_db
-
-  db:
-    image: postgres:latest   # Используем последний стабильный образ
-    environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: formulas_db
-    ports:
-      - "5432:5432"
+      - "5000:5000"
     volumes:
-      - db_data:/var/lib/postgresql/data
-
-volumes:
-  db_data:
+      - .:/usr/src/app  # Монтируем локальные файлы внутрь контейнера
+      - /usr/src/app/node_modules  # Исключаем node_modules из локального монтирования
+    environment:
+      - NODE_ENV=production
