@@ -92,22 +92,47 @@ function compareParsedFormulas(parsedFormula1, parsedFormula2) {
 
 // Расширенный парсинг LaTeX-формулы
 function parseLatex(latex) {
-  return latex
+  return normalizeFormula( 
+    latex
     .replace(/\s+/g, '') // Убираем пробелы
     .replace(/\left|\right/g, '') // Убираем скобочные элементы
-    .replace(/\sqrt\{(.*?)\}/g, (_, content) => `sqrt(${parseLatex(content)})`)
-    .replace(/\frac\{(.*?)\}\{(.*?)\}/g, (_, num, denom) => `(${parseLatex(num)})/(${parseLatex(denom)})`)
-    .replace(/\^{([^}]+)}/g, (_, exp) => `^(${parseLatex(exp)})`)
-    .replace(/\{([^}]+)}/g, (_, content) => `(${parseLatex(content)})`)
-    .replace(/([a-zA-Z0-9)])([a-zA-Z(])/g, '$1*$2') // Между буквами и числами
-    .replace(/([a-zA-Z0-9])\(/g, '$1*(') // Между символом и открывающей скобкой
+    .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, (_, num, denom) => `${parseLatex(num)}/${parseLatex(denom)}`) // Убираем скобки в дробях
+    .replace(/\\sqrt\{(.*?)\}/g, (_, content) => `sqrt(${parseLatex(content)})`) // Корректно разбираем \sqrt
+    .replace(/\^{([^}]+)}/g, (_, exp) => `^(${parseLatex(exp)})`) // Обрабатываем степени
+    .replace(/\{([^}]+)}/g, (_, content) => `(${parseLatex(content)})`) // Разбираем фигурные скобки
+    // Добавляем умножение между цифрами, буквами и скобками
+    .replace(/([0-9])([a-zA-Z(\\])/g, '$1*$2') // Между цифрой и буквой/скобкой
+    .replace(/([a-zA-Z0-9)])([a-zA-Z(\\])/g, '$1*$2') // Между буквами/цифрами и функциями/скобками
     .replace(/\)([a-zA-Z0-9])/g, ')*$1') // Между закрывающей скобкой и символом
-    .replace(/([0-9])([a-zA-Z(])/g, '$1*$2')
-    .replace(/([a-zA-Z0-9)])([a-zA-Z(])/g, '$1*$2')
-
-
-    .split(/([+\-*/^=()])/).filter(Boolean); // Разбиваем формулу на элементы
+    .replace(/(\d),(\d)/g, '$1.$2')
+    .replace(/,/g, '')
+    .replace(/([a-zA-Z0-9\)]+)\/([a-zA-Z0-9\(\)]+)/g, '($1)/($2)')
+    .split(/([+\-*/^=()])/).filter(Boolean) // Разбиваем формулу на элементы
+  );
 }
+
+function normalizeFormula(elements) {
+  // Преобразуем массив элементов обратно в строку
+  const formula = elements.join('');
+
+  // Убираем внешние скобки, если они оборачивают всю формулу
+  if (formula.startsWith('(') && formula.endsWith(')')) {
+    let depth = 0;
+    for (let i = 0; i < formula.length; i++) {
+      if (formula[i] === '(') depth++;
+      if (formula[i] === ')') depth--;
+      if (depth === 0 && i < formula.length - 1) {
+        // Если закрывающая скобка встречается не в конце, оставляем скобки
+        return elements;
+      }
+    }
+    // Убираем внешние скобки
+    return normalizeFormula(elements.slice(1, elements.length - 1));
+  }
+
+  return elements;
+}
+
 
 // Подсчёт общих структурных элементов
 function calculateCommonStructure(parsedFormula1, parsedFormula2) {
