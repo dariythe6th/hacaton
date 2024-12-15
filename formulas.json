@@ -122,9 +122,6 @@
   {
     "formula": "T=2π√(l/g)",
     "description": "Период математического маятника"
-  },
-  {
-    "formula": "f(x) = \\frac{A_0}{2} + \\sum \\limits_{n=1}^{\\infty} A_n \\cos \\left( \\frac{2 n \\pi x}{\\nu} - \\alpha_n \\right)",
-    "createdAt": "2024-12-15T17:00:12.794Z"
   }
+
 ]
