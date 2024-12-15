@@ -54,14 +54,14 @@ function compareFormulas() {
   const formula2 = document.getElementById('comparisonInput').value;
 
   const similarity = calculateStructuralSimilarity(formula1, formula2);
-  const comparisonResult = document.getElementById('comparisonResult');
-  comparisonResult.innerHTML = `Сходство: ${similarity}%`;
+  const comparison2Result = document.getElementById('comparison2Result');
+  comparison2Result.innerHTML = `Сходство: ${similarity}%`;
 
   // Показать новое поле с выделением
   showComparisonHighlight(formula1, formula2);
 }
 
-// Подсчёт структурного сходства с учётом содержимого и степеней
+// Подсчёт структурного сходства с учётом содержимого
 function calculateStructuralSimilarity(formula1, formula2) {
   const parsedFormula1 = parseLatex(formula1);
   const parsedFormula2 = parseLatex(formula2);
@@ -76,7 +76,7 @@ function calculateStructuralSimilarity(formula1, formula2) {
   return Math.floor((common / maxElements) * 100);
 }
 
-// Сравнение парсенных формул с учетом структуры и степеней
+// Сравнение парсенных формул с учетом структуры 
 function compareParsedFormulas(parsedFormula1, parsedFormula2) {
   if (parsedFormula1.length !== parsedFormula2.length) {
     return false;
@@ -112,27 +112,19 @@ function parseLatex(latex) {
 }
 
 function normalizeFormula(elements) {
-  // Преобразуем массив элементов обратно в строку
   const formula = elements.join('');
 
-  // Убираем внешние скобки, если они оборачивают всю формулу
-  if (formula.startsWith('(') && formula.endsWith(')')) {
-    let depth = 0;
-    for (let i = 0; i < formula.length; i++) {
-      if (formula[i] === '(') depth++;
-      if (formula[i] === ')') depth--;
-      if (depth === 0 && i < formula.length - 1) {
-        // Если закрывающая скобка встречается не в конце, оставляем скобки
-        return elements;
-      }
+  // Убираем скобки, если они окружают только один оператор и не меняют порядок вычислений
+  let normalizedFormula = formula.replace(/\(([^()]+)\)/g, (match, content) => {
+    // Оставляем скобки только если это необходимо для правильного порядка операций
+    if (/[\+\-\*\/^]/.test(content)) {
+      return `(${content})`;
     }
-    // Убираем внешние скобки
-    return normalizeFormula(elements.slice(1, elements.length - 1));
-  }
+    return content;
+  });
 
-  return elements;
+  return normalizedFormula.split(/([+\-*/^=()])/).filter(Boolean);
 }
-
 
 // Подсчёт общих структурных элементов
 function calculateCommonStructure(parsedFormula1, parsedFormula2) {
@@ -233,26 +225,47 @@ function saveFormula() {
 }
 
 
-// Получение и сравнение формул
+// Функция для сравнения формул с базой данных
 function fetchAndCompare() {
   const formula = document.getElementById('latexInput').value;
+
   fetch('/api/formulas/compare', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ formula }),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ formula }),
   })
-      .then(response => response.json())
-      .then(data => {
-          const result = data.data;
-          const comparisonResult = document.getElementById('comparisonResult');
-          comparisonResult.innerHTML = result
-              .map(item => `Формула: ${item.dbFormula}, Сходство: ${item.similarity}%`)
-              .join('<br>');
-      })
-      .catch(error => console.error('Error:', error));
+    .then(response => response.json())
+    .then(data => {
+      const result = data.data;
+      const comparisonResult = document.getElementById('comparisonResult');
+
+      // Очищаем предыдущие результаты
+      comparisonResult.innerHTML = '';
+      const filteredResults = result.filter(item => item.similarity > 0);
+      if (filteredResults.length === 0) {
+        comparisonResult.innerHTML = 'Нет формул в базе данных для сравнения.';
+      } else {
+        filteredResults.forEach(item => {
+          const formulaContainer = document.createElement('div');
+          formulaContainer.innerHTML = `
+            Формула: \\(${item.dbFormula}\\), 
+            Сходство: ${item.similarity}%
+          `;
+          MathJax.Hub.Queue(["Typeset", MathJax.Hub, formulaContainer]);
+          comparisonResult.appendChild(formulaContainer);
+        });
+
+        // Убедитесь, что MathJax перерисовывает новые формулы
+        MathJax.typesetPromise().catch(err => console.log('MathJax error:', err));
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  const modal = document.getElementById('comparisonResultBlock');
+  modal.style.display = 'flex'; // Показываем окно
 }
+
 
 function openModal() {
   const modal = document.getElementById('comparisonHighlight');
@@ -264,3 +277,7 @@ function closeModal() {
   const modal = document.getElementById('comparisonHighlight');
   modal.style.display = 'none'; // Скрываем окно
 }
+function closeDBModal() {
+  const modal = document.getElementById('comparisonResultBlock');
+  modal.style.display = 'none'; // Скрываем окно
+} 
