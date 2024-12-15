@@ -99,6 +99,13 @@ function parseLatex(latex) {
     .replace(/\frac\{(.*?)\}\{(.*?)\}/g, (_, num, denom) => `(${parseLatex(num)})/(${parseLatex(denom)})`)
     .replace(/\^{([^}]+)}/g, (_, exp) => `^(${parseLatex(exp)})`)
     .replace(/\{([^}]+)}/g, (_, content) => `(${parseLatex(content)})`)
+    .replace(/([a-zA-Z0-9)])([a-zA-Z(])/g, '$1*$2') // Между буквами и числами
+    .replace(/([a-zA-Z0-9])\(/g, '$1*(') // Между символом и открывающей скобкой
+    .replace(/\)([a-zA-Z0-9])/g, ')*$1') // Между закрывающей скобкой и символом
+    .replace(/([0-9])([a-zA-Z(])/g, '$1*$2')
+    .replace(/([a-zA-Z0-9)])([a-zA-Z(])/g, '$1*$2')
+
+
     .split(/([+\-*/^=()])/).filter(Boolean); // Разбиваем формулу на элементы
 }
 
